@@ -1,6 +1,6 @@
 import requests
  
-page_count = 10
+page_count = 1000
 def fetch_all_employee_details(School_id , version):
     url = "https://employment-db-copy.bubbleapps.io/version-test/api/1.1/obj/profiledetails"
     if version == "live":
