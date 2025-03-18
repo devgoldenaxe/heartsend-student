@@ -1,6 +1,23 @@
 import requests
+import datetime
+cache = {}
+
+def get_students(schoolId, version):
+    now = datetime.datetime.now()
+    
+    if schoolId in cache:
+        students, timestamp = cache[schoolId]
+        if now - timestamp < datetime.timedelta(days=1):
+            print("Returning cached data.")
+            return students
+
+    # If no valid cached data is available, fetch new data.
+    print("Fetching new data.")
+    students = fetch_all_employee_details(schoolId, version)
+    cache[schoolId] = (students, now)
+    return students
  
-page_count = 10
+page_count = 1000
 def fetch_all_employee_details(School_id , version):
     url = "https://employment-db-copy.bubbleapps.io/version-test/api/1.1/obj/profiledetails"
     if version == "live":
@@ -38,7 +55,7 @@ def fetch_all_employee_details(School_id , version):
             break
         
         params["cursor"] = cursor + page_count
-        break
+        # break
             
     return all_results
 
@@ -230,7 +247,7 @@ def module(School_id, user_id , version = "test"):
     #excel_file_path = r"C:\Users\MSI\Desktop\work\recommendation system\kids version\synthetic_output.xlsx"
     #sheet_name = 0
     print(version)
-    df_out = fetch_all_employee_details(School_id , version)
+    df_out = get_students(School_id , version)
     print(df_out[0])
     #list_of_users = df_out.to_dict(orient="records")
     # test_user = {
